@@ -28,45 +28,54 @@
 ## ⚡ Быстрый старт
 
 ### Шаг 1: Скачайте проект
-1. Откройте браузер
-2. Перейдите на: https://github.com/ildar644/priyt-shivot
-3. Нажмите зеленую кнопку **"Code"**
-4. Выберите **"Download ZIP"**
-5. Распакуйте архив в любую папку
+1. Откройте командную строку (Windows: Win+R → cmd)
+2. Перейдите в папку, где хотите разместить проект:
+   ```bash
+   cd C:\Users\ВашеИмя\Desktop
+   ```
+3. Скачайте проект:
+   ```bash
+   git clone https://github.com/ildar644/priyt-shivot.git
+   ```
+4. Перейдите в папку проекта:
+   ```bash
+   cd priyt-shivot
+   ```
 
-### Шаг 2: Установите Python
-1. Перейдите на: https://www.python.org/downloads/
-2. Скачайте последнюю версию Python
-3. **ВАЖНО**: При установке поставьте галочку **"Add Python to PATH"**
-4. Нажмите **"Install Now"**
+### Шаг 2: Установите Python и Git
+1. **Python**: Перейдите на https://www.python.org/downloads/
+   - Скачайте последнюю версию Python
+   - **ВАЖНО**: При установке поставьте галочку **"Add Python to PATH"**
+   - Нажмите **"Install Now"**
+
+2. **Git**: Перейдите на https://git-scm.com/downloads
+   - Скачайте Git для вашей ОС
+   - Установите с настройками по умолчанию
 
 ### Шаг 3: Запустите проект
-1. Откройте папку с проектом
-2. Найдите файл `QUICK_START.bat` (если его нет, создайте - см. ниже)
-3. Дважды кликните по нему
+1. Откройте командную строку в папке проекта
+2. Перейдите в папку project:
+   ```bash
+   cd project
+   ```
+3. Запустите быстрый старт:
+   - **Windows**: дважды кликните `QUICK_START.bat`
+   - **Mac/Linux**: выполните `./quick_start.sh`
 4. Дождитесь завершения установки
 5. Откройте браузер и перейдите на: http://127.0.0.1:8000
 
-### Создание QUICK_START.bat (если его нет):
-Создайте текстовый файл и вставьте:
-```batch
-@echo off
-echo Установка проекта "Приют для животных"...
-cd /d "%~dp0project"
-python -m pip install --upgrade pip
+### Альтернативный способ (ручная установка):
+Если автоматические скрипты не работают, выполните команды вручную:
+```bash
+cd project
 pip install -r requirements.txt
-copy .env.example .env
+copy .env.example .env          # Windows
+cp .env.example .env            # Mac/Linux
 python manage.py migrate
 python manage.py collectstatic --noinput
-echo.
-echo Создание администратора...
 python manage.py createsuperuser
-echo.
-echo Запуск сервера...
 python manage.py runserver
-pause
 ```
-Сохраните как `QUICK_START.bat`
 
 ---
 
@@ -111,13 +120,12 @@ pip --version
 
 ### Шаг 3: Скачивание проекта
 
-#### Вариант A: Через Git (рекомендуется)
 ```bash
 git clone https://github.com/ildar644/priyt-shivot.git
 cd priyt-shivot
 ```
 
-#### Вариант B: Скачать ZIP
+**Альтернативный способ (если Git не установлен):**
 1. Перейдите на https://github.com/ildar644/priyt-shivot
 2. Нажмите "Code" → "Download ZIP"
 3. Распакуйте в любую папку
