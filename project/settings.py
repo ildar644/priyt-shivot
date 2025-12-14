@@ -178,6 +178,10 @@ SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'
 # Google OAuth настройки (будут браться из .env)
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
+        'APP': {
+            'client_id': os.getenv('GOOGLE_OAUTH_CLIENT_ID', ''),
+            'secret': os.getenv('GOOGLE_OAUTH_CLIENT_SECRET', ''),
+        },
         'SCOPE': [
             'profile',
             'email',
