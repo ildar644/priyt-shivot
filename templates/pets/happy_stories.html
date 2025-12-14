@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Счастливые истории - Питомцы из приюта</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+</head>
+<body>
+    <div class="container">
+        {% include 'includes/nav.html' %}
+
+        <div class="header">
+            <h1>😊 Счастливые истории</h1>
+            <p>Наши питомцы, которые уже нашли любящие семьи</p>
+        </div>
+
+        {% if stories %}
+            <div class="pets-grid">
+                {% for story in stories %}
+                    <div class="pet-card">
+                        <a href="{% url 'happy_story_detail' story.pk %}">
+                            {% if story.photo_after %}
+                                <img src="{{ story.photo_after.url }}" alt="{{ story.pet.name }}">
+                            {% elif story.pet.photo %}
+                                <img src="{{ story.pet.photo.url }}" alt="{{ story.pet.name }}">
+                            {% else %}
+                                <div class="no-photo">
+                                    <span>📷 Фото отсутствует</span>
+                                </div>
+                            {% endif %}
+                            
+                            <h3>{{ story.pet.name }}</h3>
+                            <div class="pet-info">
+                                <strong>Новый дом:</strong> <span>{{ story.new_owner_name }}</span>
+                            </div>
+                            <div class="pet-info">
+                                <strong>Дата усыновления:</strong> <span>{{ story.adoption_date|date:"d.m.Y" }}</span>
+                            </div>
+                            <div class="pet-info">
+                                <strong>История:</strong> <span>{{ story.title }}</span>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Пагинация -->
+            {% if is_paginated %}
+                <div class="pagination">
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}" class="back-btn">← Предыдущая</a>
+                    {% endif %}
+                    
+                    <span class="current-page">
+                        Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+                    </span>
+                    
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}" class="back-btn">Следующая →</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="no-pets">
+                <h2>Пока нет опубликованных историй</h2>
+                <p>Скоро здесь появятся рассказы о наших питомцах, которые нашли дом!</p>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

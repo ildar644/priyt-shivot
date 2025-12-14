@@ -1,0 +1,121 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Как помочь приюту? - Питомцы из приюта</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+</head>
+<body>
+    <div class="container">
+        {% include 'includes/nav.html' %}
+
+        <div class="pet-detail-container">
+            <a href="{% url 'pet_list' %}" class="back-btn">← Назад к питомцам</a>
+
+            <div class="header">
+                <h1>🤝 Как помочь приюту?</h1>
+                <p>Каждая помощь важна для наших четвероногих друзей</p>
+            </div>
+
+            <!-- Банковские реквизиты -->
+            {% if payment_methods %}
+            <div class="section payment-section">
+                <h2>💳 Способы помощи приюту</h2>
+                <div class="payment-methods">
+                    {% for payment in payment_methods %}
+                        <div class="payment-card">
+                            <h3>
+                                {% if payment.payment_type == 'bank' %}🏦
+                                {% elif payment.payment_type == 'card' %}💳
+                                {% elif payment.payment_type == 'sbp' %}📱
+                                {% elif payment.payment_type == 'wallet' %}🌐
+                                {% endif %}
+                                {{ payment.title }}
+                            </h3>
+                            
+                            {% if payment.payment_type == 'bank' %}
+                                <div class="bank-details">
+                                    {% if payment.recipient_name %}<div class="detail-item"><strong>Получатель:</strong> {{ payment.recipient_name }}</div>{% endif %}
+                                    {% if payment.inn %}<div class="detail-item"><strong>ИНН:</strong> {{ payment.inn }}</div>{% endif %}
+                                    {% if payment.kpp %}<div class="detail-item"><strong>КПП:</strong> {{ payment.kpp }}</div>{% endif %}
+                                    {% if payment.account_number %}<div class="detail-item"><strong>Расчетный счет:</strong> {{ payment.account_number }}</div>{% endif %}
+                                    {% if payment.bank_name %}<div class="detail-item"><strong>Банк:</strong> {{ payment.bank_name }}</div>{% endif %}
+                                    {% if payment.bik %}<div class="detail-item"><strong>БИК:</strong> {{ payment.bik }}</div>{% endif %}
+                                    {% if payment.payment_purpose %}<div class="detail-item"><strong>Назначение платежа:</strong> {{ payment.payment_purpose }}</div>{% endif %}
+                                </div>
+                            {% elif payment.payment_type == 'card' %}
+                                {% if payment.card_number %}<div class="card-number">{{ payment.card_number }}</div>{% endif %}
+                                {% if payment.card_holder %}<div class="card-holder">{{ payment.card_holder }}</div>{% endif %}
+                            {% elif payment.payment_type == 'sbp' %}
+                                {% if payment.phone_number %}<div class="sbp-number">{{ payment.phone_number }}</div>{% endif %}
+                                <p>Переводы по номеру телефона через любой банк</p>
+                            {% elif payment.payment_type == 'wallet' %}
+                                {% if payment.card_number %}
+                                    <div class="wallet-item">
+                                        <strong>{{ payment.title }}:</strong> {{ payment.card_number }}
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                            
+                            {% if payment.description %}
+                                <p class="payment-description">{{ payment.description }}</p>
+                            {% endif %}
+                            
+                            <button class="copy-btn" onclick="copyPaymentInfo('{{ payment.get_copy_text|escapejs }}', '{{ payment.title }} скопирован!')">
+                                📋 Копировать
+                            </button>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Информация о помощи -->
+            {% if help_items %}
+                {% for item in help_items %}
+                    <div class="section">
+                        <h2>{{ item.title }}</h2>
+                        <p>{{ item.content|linebreaks }}</p>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Дополнительная информация -->
+            <div class="section">
+                <h2>📋 Отчетность</h2>
+                <p>Мы ведем полную отчетность по всем пожертвованиям. Каждый месяц публикуем отчет о потраченных средствах на нашем сайте и в социальных сетях.</p>
+                <p><strong>Все пожертвования идут исключительно на:</strong></p>
+                <ul>
+                    <li>Корм и витамины для животных</li>
+                    <li>Ветеринарное обслуживание</li>
+                    <li>Лекарства и медицинские процедуры</li>
+                    <li>Содержание приюта (коммунальные услуги)</li>
+                    <li>Игрушки и аксессуары для питомцев</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function copyToClipboard(text, message) {
+            navigator.clipboard.writeText(text).then(function() {
+                alert(message);
+            }).catch(function() {
+                // Fallback для старых браузеров
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert(message);
+            });
+        }
+
+        function copyPaymentInfo(text, message) {
+            copyToClipboard(text, message);
+        }
+    </script></body>
+</html>

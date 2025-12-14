@@ -1,0 +1,22 @@
+# Автоматическое определение текстовых файлов и нормализация окончаний строк
+* text=auto
+
+# Явно указываем текстовые файлы
+*.py text
+*.html text
+*.css text
+*.js text
+*.md text
+*.txt text
+*.json text
+*.yml text
+*.yaml text
+
+# Бинарные файлы
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary

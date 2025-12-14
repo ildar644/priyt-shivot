@@ -1,0 +1,106 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ story.title }} - Счастливая история</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+</head>
+<body>
+    <div class="container">
+        {% include 'includes/nav.html' %}
+
+        <div class="pet-detail-container">
+            <a href="{% url 'happy_stories' %}" class="back-btn">← Назад к историям</a>
+            
+            <div class="header">
+                <h1>😊 {{ story.title }}</h1>
+                <p>История {{ story.pet.name }} и семьи {{ story.new_owner_name }}</p>
+            </div>
+
+            <div class="pet-header">
+                <div class="pet-photo">
+                    {% if story.photo_after %}
+                        <img src="{{ story.photo_after.url }}" alt="{{ story.pet.name }} в новом доме">
+                        <p style="text-align: center; margin-top: 10px; color: #27ae60; font-weight: 600;">
+                            📸 В новом доме
+                        </p>
+                    {% elif story.pet.photo %}
+                        <img src="{{ story.pet.photo.url }}" alt="{{ story.pet.name }}">
+                        <p style="text-align: center; margin-top: 10px; color: #7f8c8d;">
+                            📸 В приюте
+                        </p>
+                    {% else %}
+                        <div class="no-photo">
+                            <span>📷 Фото отсутствует</span>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="pet-basic-info">
+                    <h2>{{ story.pet.name }}</h2>
+                    
+                    <div class="info-item">
+                        <span class="info-label">Тип:</span>
+                        <span class="info-value">{{ story.pet.pet_type.name }}</span>
+                    </div>
+                    
+                    <div class="info-item">
+                        <span class="info-label">Возраст:</span>
+                        <span class="info-value">{{ story.pet.age_in_years }}</span>
+                    </div>
+                    
+                    <div class="info-item">
+                        <span class="info-label">Новая семья:</span>
+                        <span class="info-value">{{ story.new_owner_name }}</span>
+                    </div>
+                    
+                    <div class="info-item">
+                        <span class="info-label">Дата усыновления:</span>
+                        <span class="info-value">{{ story.adoption_date|date:"d.m.Y" }}</span>
+                    </div>
+                    
+                    <div class="info-item">
+                        <span class="info-label">Приют:</span>
+                        <span class="info-value">{{ story.pet.shelter.name }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📖 История усыновления</h2>
+                <p>{{ story.story|linebreaks }}</p>
+            </div>
+
+            {% if story.pet.history %}
+            <div class="section">
+                <h2>🏠 Жизнь в приюте</h2>
+                <p>{{ story.pet.history|linebreaks }}</p>
+            </div>
+            {% endif %}
+
+            {% if story.pet.character %}
+            <div class="section">
+                <h2>💝 Характер {{ story.pet.name }}</h2>
+                <p>{{ story.pet.character|linebreaks }}</p>
+            </div>
+            {% endif %}
+
+            <div class="section contact-info">
+                <h2>🎉 Поздравляем!</h2>
+                <p>
+                    Эта история показывает, как важна каждая помощь приюту. 
+                    Благодаря заботе волонтеров и поддержке неравнодушных людей, 
+                    {{ story.pet.name }} обрел новую счастливую жизнь!
+                </p>
+                <p>
+                    <strong>Хотите помочь другим питомцам найти дом?</strong><br>
+                    <a href="{% url 'pet_list' %}">Посмотрите наших питомцев</a> или 
+                    <a href="{% url 'help_info' %}">узнайте, как помочь приюту</a>.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

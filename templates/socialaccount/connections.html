@@ -1,0 +1,79 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Социальные аккаунты - Питомцы из приюта</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+</head>
+<body>
+    <div class="container">
+        {% include 'includes/nav.html' %}
+
+        <div class="social-connections-container">
+            <div class="social-connections-card">
+                <div class="connections-header">
+                    <h1>🔗 Социальные аккаунты</h1>
+                    <p>Управляйте подключенными аккаунтами</p>
+                </div>
+
+                <div class="connections-content">
+                    {% if socialaccount_list %}
+                        <div class="connected-accounts">
+                            <h3>Подключенные аккаунты:</h3>
+                            {% for account in socialaccount_list %}
+                                <div class="account-item">
+                                    <div class="account-info">
+                                        <div class="provider-icon">
+                                            {% if account.provider == 'google' %}
+                                                🔍
+                                            {% else %}
+                                                🔗
+                                            {% endif %}
+                                        </div>
+                                        <div class="account-details">
+                                            <strong>{{ account.provider|title }}</strong>
+                                            <span>{{ account.extra_data.email|default:account.uid }}</span>
+                                        </div>
+                                    </div>
+                                    <form method="post" action="{% url 'socialaccount_connections' %}" style="display: inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="account" value="{{ account.id }}">
+                                        <button type="submit" name="action_remove" class="remove-btn">
+                                            Отключить
+                                        </button>
+                                    </form>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="no-connections">
+                            <div class="no-connections-icon">🔗</div>
+                            <h3>Нет подключенных аккаунтов</h3>
+                            <p>Подключите социальные аккаунты для быстрого входа</p>
+                        </div>
+                    {% endif %}
+
+                    <div class="add-connection">
+                        <h3>Добавить аккаунт:</h3>
+                        <div class="provider-buttons">
+                            {% load socialaccount %}
+                            <a href="{% provider_login_url 'google' %}" class="provider-btn google-btn">
+                                <span class="provider-icon">🔍</span>
+                                Подключить Google
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="connections-footer">
+                    <a href="{% url 'pet_list' %}" class="back-btn">
+                        ← Вернуться на главную
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,216 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ pet.name }} - Питомец из приюта</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+</head>
+<body>
+    <div class="container">
+        {% include 'includes/nav.html' %}
+
+        <div class="pet-detail-container">
+            <a href="{% url 'pet_list' %}" class="back-btn">← Назад к списку</a>
+
+            <div class="pet-header">
+            <div class="pet-photo">
+                {% if pet.photo %}
+                    <img src="{{ pet.photo.url }}" alt="{{ pet.name }}">
+                {% else %}
+                    <div style="width: 100%; height: 300px; background: #ddd; display: flex; align-items: center; justify-content: center; border-radius: 10px;">
+                        <span style="color: #999; font-size: 18px;">Фото отсутствует</span>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="pet-basic-info">
+                <h1>{{ pet.name }}</h1>
+                
+                <div class="info-item">
+                    <span class="info-label">Тип:</span> 
+                    <span class="info-value">{{ pet.pet_type.name }}</span>
+                </div>
+                
+                <div class="info-item">
+                    <span class="info-label">Возраст:</span> 
+                    <span class="info-value">{{ pet.age_in_years }}</span>
+                </div>
+                
+                <div class="info-item">
+                    <span class="info-label">Приют:</span> 
+                    <span class="info-value">{{ pet.shelter.name }}</span>
+                </div>
+                
+                <div class="info-item">
+                    <span class="info-label">Статус:</span> 
+                    {% if pet.is_adopted %}
+                        <span class="status-adopted">✅ Усыновлен</span>
+                    {% else %}
+                        <span class="status-available">❤️ Ищет дом</span>
+                    {% endif %}
+                </div>
+                
+                <div class="info-item">
+                    <span class="info-label">Добавлен:</span> 
+                    <span class="info-value">{{ pet.date_added|date:"d.m.Y" }}</span>
+                </div>
+                
+                {% if user.is_authenticated %}
+                    <!-- Основная кнопка усыновления для авторизованных -->
+                    {% if not pet.is_adopted %}
+                        {% if user_application %}
+                            <div class="application-status-main">
+                                <div class="status-card">
+                                    <span class="status-badge status-{{ user_application.status }}">
+                                        {{ user_application.get_status_display }}
+                                    </span>
+                                    <div class="status-details">
+                                        <p><strong>Ваша заявка на усыновление {{ pet.name }}</strong></p>
+                                        <small>Подана {{ user_application.date_created|date:"d.m.Y в H:i" }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="adoption-cta">
+                                <a href="{% url 'adoption_application' pet.pk %}" class="btn-adopt-main">
+                                    🏠 Подать заявку на усыновление {{ pet.name }}
+                                </a>
+                                <p class="adoption-note">Заполните анкету, и мы свяжемся с вами</p>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                {% else %}
+                    <!-- Блок для неавторизованных пользователей -->
+                    {% if not pet.is_adopted %}
+                        <div class="adoption-cta-login">
+                            <div class="login-required-message">
+                                <h3>🔐 Требуется авторизация</h3>
+                                <p>Чтобы подать заявку на усыновление {{ pet.name }}, необходимо войти в систему</p>
+                                <div class="auth-buttons">
+                                    <a href="{% url 'login' %}" class="btn-login-main">
+                                        🔑 Войти в систему
+                                    </a>
+                                    <a href="{% url 'signup' %}" class="btn-signup-main">
+                                        📝 Зарегистрироваться
+                                    </a>
+                                </div>
+                                <p class="auth-note">После входа вы сможете подать заявку на усыновление</p>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endif %}
+                
+                <!-- Дополнительные действия -->
+                {% if user.is_authenticated %}
+                    <div class="pet-actions-secondary">
+                        {% if is_favorite %}
+                            <a href="{% url 'remove_from_favorites' pet.pk %}" class="btn-action btn-favorite-remove">💖 Убрать из избранного</a>
+                        {% else %}
+                            <a href="{% url 'add_to_favorites' pet.pk %}" class="btn-action">❤️ В избранное</a>
+                        {% endif %}
+                        <a href="{% url 'sponsor_pet' pet.pk %}" class="btn-action btn-sponsor">💝 Помочь финансово</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>История питомца</h2>
+            <p>{{ pet.history|linebreaks }}</p>
+        </div>
+
+        <div class="section">
+            <h2>Характер</h2>
+            <p>{{ pet.character|linebreaks }}</p>
+        </div>
+
+        {% if pet.special_needs %}
+        <div class="section">
+            <h2>Особенности</h2>
+            <p>{{ pet.special_needs|linebreaks }}</p>
+        </div>
+        {% endif %}
+
+        <div class="section contact-info">
+            <h2>📞 Контакты приюта</h2>
+            <div class="info-item">
+                <span class="info-label">Название:</span> 
+                <span class="info-value">{{ pet.shelter.name }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Адрес:</span> 
+                <span class="info-value">{{ pet.shelter.address }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Телефон:</span> 
+                <span class="info-value">{{ pet.shelter.phone }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Email:</span> 
+                <span class="info-value">{{ pet.shelter.email }}</span>
+            </div>
+            {% if pet.shelter.website %}
+            <div class="info-item">
+                <span class="info-label">Сайт:</span> 
+                <span class="info-value"><a href="{{ pet.shelter.website }}" target="_blank">{{ pet.shelter.website }}</a></span>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Секция комментариев -->
+        <div class="section">
+            <h2>💬 Комментарии</h2>
+            
+            {% if user.is_authenticated %}
+                <!-- Форма добавления комментария -->
+                <div class="comment-form-section">
+                    <h3>Оставить комментарий</h3>
+                    <form method="post" action="{% url 'add_comment' pet.pk %}" class="comment-form">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="{{ comment_form.content.id_for_label }}">{{ comment_form.content.label }}</label>
+                            {{ comment_form.content }}
+                        </div>
+                        <button type="submit" class="btn-comment">Отправить комментарий</button>
+                    </form>
+                </div>
+            {% else %}
+                <div class="login-prompt">
+                    <p><a href="{% url 'login' %}">Войдите</a>, чтобы оставить комментарий</p>
+                </div>
+            {% endif %}
+
+            <!-- Список комментариев -->
+            <div class="comments-list">
+                {% if comments %}
+                    {% for comment in comments %}
+                        <div class="comment-item">
+                            <div class="comment-header">
+                                <strong class="comment-author">{{ comment.user.username }}</strong>
+                                <span class="comment-date">{{ comment.date_created|date:"d.m.Y H:i" }}</span>
+                                {% if user == comment.user %}
+                                    <a href="{% url 'delete_comment' comment.id %}" 
+                                       class="delete-comment" 
+                                       onclick="return confirm('Удалить комментарий?')">
+                                        🗑️
+                                    </a>
+                                {% endif %}
+                            </div>
+                            <div class="comment-content">
+                                {{ comment.content|linebreaks }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="no-comments">
+                        <p>Пока нет комментариев. Будьте первым!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,154 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Питомцы из приюта - Найди друга</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🐾 Питомцы из приюта ищут дом</h1>
+            <p>Подарите любовь и заботу нашим четвероногим друзьям</p>
+        </div>
+        
+        {% include 'includes/nav.html' %}
+        
+        <!-- Панель сравнения -->
+        <div id="compare-panel" style="display: none;">
+            <div class="compare-info">
+                <span id="compare-count">0</span> питомцев выбрано для сравнения
+                <button id="compare-btn" class="btn-compare">Сравнить</button>
+                <button id="clear-compare" class="btn-clear">Очистить</button>
+            </div>
+        </div>
+
+    {% if pets %}
+        <div class="pets-grid">
+            {% for pet in pets %}
+                <div class="pet-card" data-pet-id="{{ pet.id }}">
+                    <div class="pet-actions">
+                        <input type="checkbox" class="compare-checkbox" value="{{ pet.id }}" id="compare-{{ pet.id }}">
+                        <label for="compare-{{ pet.id }}" class="compare-label">Сравнить</label>
+                        {% if user.is_authenticated %}
+                            <button class="favorite-btn" data-pet-id="{{ pet.id }}" title="{% if pet.id in favorite_pet_ids %}Удалить из избранного{% else %}Добавить в избранное{% endif %}">
+                                {% if pet.id in favorite_pet_ids %}💖{% else %}❤️{% endif %}
+                            </button>
+                        {% endif %}
+                    </div>
+                    
+                    <a href="{% url 'pet_detail' pet.pk %}">
+                        {% if pet.photo %}
+                            <img src="{{ pet.photo.url }}" alt="{{ pet.name }}">
+                        {% else %}
+                            <div class="no-photo">
+                                <span>📷 Фото отсутствует</span>
+                            </div>
+                        {% endif %}
+                        <h3>{{ pet.name }}</h3>
+                        <div class="pet-info">
+                            <strong>Тип:</strong> <span>{{ pet.pet_type.name }}</span>
+                        </div>
+                        <div class="pet-info">
+                            <strong>Возраст:</strong> <span>{{ pet.age_in_years }}</span>
+                        </div>
+                        <div class="pet-info">
+                            <strong>Приют:</strong> <span>{{ pet.shelter.name }}</span>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-pets">
+            <h2>Пока нет питомцев для усыновления</h2>
+            <p>Добавьте питомцев через <a href="/admin/">админку</a></p>
+        </div>
+    {% endif %}
+    </div>
+
+    <script>
+        // Функционал сравнения питомцев
+        const compareCheckboxes = document.querySelectorAll('.compare-checkbox');
+        const comparePanel = document.getElementById('compare-panel');
+        const compareCount = document.getElementById('compare-count');
+        const compareBtn = document.getElementById('compare-btn');
+        const clearCompareBtn = document.getElementById('clear-compare');
+        
+        let selectedPets = [];
+        
+        compareCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const petId = this.value;
+                
+                if (this.checked) {
+                    if (selectedPets.length < 3) {
+                        selectedPets.push(petId);
+                    } else {
+                        this.checked = false;
+                        alert('Можно сравнить максимум 3 питомцев');
+                        return;
+                    }
+                } else {
+                    selectedPets = selectedPets.filter(id => id !== petId);
+                }
+                
+                updateComparePanel();
+            });
+        });
+        
+        function updateComparePanel() {
+            compareCount.textContent = selectedPets.length;
+            
+            if (selectedPets.length > 0) {
+                comparePanel.style.display = 'block';
+                compareBtn.disabled = selectedPets.length < 2;
+            } else {
+                comparePanel.style.display = 'none';
+            }
+        }
+        
+        compareBtn.addEventListener('click', function() {
+            if (selectedPets.length >= 2) {
+                const params = selectedPets.map(id => `pets=${id}`).join('&');
+                window.location.href = `/compare/?${params}`;
+            }
+        });
+        
+        clearCompareBtn.addEventListener('click', function() {
+            selectedPets = [];
+            compareCheckboxes.forEach(cb => cb.checked = false);
+            updateComparePanel();
+        });
+        
+        // Функционал избранного
+        const favoriteButtons = document.querySelectorAll('.favorite-btn');
+        
+        if (favoriteButtons.length > 0) {
+            const csrfToken = '{{ csrf_token }}';
+            
+            favoriteButtons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const petId = this.dataset.petId;
+                    
+                    fetch(`/ajax/favorite/${petId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': csrfToken,
+                            'Content-Type': 'application/json',
+                        },
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        this.textContent = data.is_favorite ? '💖' : '❤️';
+                        this.title = data.message;
+                    });
+                });
+            });
+        }
+    </script>
+</body>
+</html>

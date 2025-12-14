@@ -1,0 +1,80 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация - Питомцы из приюта</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+
+</head>
+<body>
+    <div class="container">
+        {% include 'includes/nav.html' %}
+
+        <div class="auth-container">
+            <div class="auth-form">
+                <h2>📝 Регистрация</h2>
+                
+                <!-- Регистрация через Google -->
+                {% load socialaccount %}
+                <div class="social-auth">
+                    <a href="{% provider_login_url 'google' %}" class="google-login-btn">
+                        <span class="google-icon">🔍</span>
+                        Зарегистрироваться через Google
+                    </a>
+                </div>
+                
+                <div class="auth-divider">
+                    <span>или</span>
+                </div>
+            
+            <form method="post" class="auth-form-traditional">
+                {% csrf_token %}
+                
+                {% if form.errors %}
+                    <div class="form-errors">
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <div>{{ error }}</div>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                <div class="form-group">
+                    <label for="{{ form.username.id_for_label }}">Имя пользователя:</label>
+                    {{ form.username }}
+                    {% if form.username.help_text %}
+                        <small style="color: #7f8c8d;">{{ form.username.help_text }}</small>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.password1.id_for_label }}">Пароль:</label>
+                    {{ form.password1 }}
+                    {% if form.password1.help_text %}
+                        <small style="color: #7f8c8d;">{{ form.password1.help_text }}</small>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.password2.id_for_label }}">Подтверждение пароля:</label>
+                    {{ form.password2 }}
+                    {% if form.password2.help_text %}
+                        <small style="color: #7f8c8d;">{{ form.password2.help_text }}</small>
+                    {% endif %}
+                </div>
+                
+                <button type="submit" class="auth-btn">Зарегистрироваться</button>
+                
+                <div class="auth-links">
+                    <a href="{% url 'login' %}">Уже есть аккаунт? Войти</a><br>
+                    <a href="{% url 'pet_list' %}">← Назад к питомцам</a>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

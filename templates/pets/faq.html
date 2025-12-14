@@ -1,0 +1,111 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ - Часто задаваемые вопросы</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}"></head>
+<body>
+    <div class="container">
+        {% include 'includes/nav.html' %}
+
+        <div class="faq-container">
+            <a href="{% url 'pet_list' %}" class="back-btn">← Назад к питомцам</a>
+            
+            <div class="header">
+                <h1>❓ Часто задаваемые вопросы</h1>
+                <p>Ответы на самые популярные вопросы о питомцах</p>
+            </div>
+
+            <div class="search-box">
+                <input type="text" id="faq-search" class="search-input" placeholder="Поиск по вопросам...">
+            </div>
+
+            {% if faq_by_category %}
+                {% for category, faqs in faq_by_category.items %}
+                    <div class="faq-category">
+                        <h2 class="category-title">{{ category }}</h2>
+                        
+                        {% for faq in faqs %}
+                            <div class="faq-item">
+                                <button class="faq-question" data-question="{{ faq.question|lower }}">
+                                    {{ faq.question }}
+                                </button>
+                                <div class="faq-answer">
+                                    <div class="faq-answer-content">
+                                        {{ faq.answer|linebreaks }}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-pets">
+                    <h2>FAQ пока не добавлены</h2>
+                    <p>Скоро здесь появятся ответы на популярные вопросы!</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // Аккордеон для FAQ
+        const faqQuestions = document.querySelectorAll('.faq-question');
+        
+        faqQuestions.forEach(question => {
+            question.addEventListener('click', function() {
+                const answer = this.nextElementSibling;
+                const isActive = this.classList.contains('active');
+                
+                // Закрываем все открытые вопросы
+                faqQuestions.forEach(q => {
+                    q.classList.remove('active');
+                    q.nextElementSibling.classList.remove('active');
+                });
+                
+                // Открываем текущий, если он не был активен
+                if (!isActive) {
+                    this.classList.add('active');
+                    answer.classList.add('active');
+                }
+            });
+        });
+        
+        // Поиск по FAQ
+        const searchInput = document.getElementById('faq-search');
+        const faqItems = document.querySelectorAll('.faq-item');
+        
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                const answer = item.querySelector('.faq-answer-content');
+                const questionText = question.textContent.toLowerCase();
+                const answerText = answer.textContent.toLowerCase();
+                
+                if (questionText.includes(searchTerm) || answerText.includes(searchTerm)) {
+                    item.style.display = 'block';
+                    
+                    // Подсвечиваем найденные результаты
+                    if (searchTerm && questionText.includes(searchTerm)) {
+                        question.classList.add('active');
+                        answer.classList.add('active');
+                    }
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // Показываем/скрываем категории
+            const categories = document.querySelectorAll('.faq-category');
+            categories.forEach(category => {
+                const visibleItems = category.querySelectorAll('.faq-item[style="display: block"], .faq-item:not([style])');
+                category.style.display = visibleItems.length > 0 ? 'block' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>

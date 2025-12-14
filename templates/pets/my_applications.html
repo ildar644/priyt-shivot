@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мои заявки - Питомцы из приюта</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+</head>
+<body>
+    <div class="container">
+        {% include 'includes/nav.html' %}
+
+        <div class="header">
+            <h1>📋 Мои заявки на усыновление</h1>
+            <p>Статус ваших заявок на усыновление питомцев</p>
+        </div>
+
+        {% if applications %}
+            <div class="applications-list">
+                {% for application in applications %}
+                    <div class="application-card">
+                        <div class="application-header">
+                            <div class="pet-info">
+                                {% if application.pet.photo %}
+                                    <img src="{{ application.pet.photo.url }}" alt="{{ application.pet.name }}" class="pet-thumb">
+                                {% endif %}
+                                <div class="pet-details">
+                                    <h3><a href="{% url 'pet_detail' application.pet.pk %}">{{ application.pet.name }}</a></h3>
+                                    <p>{{ application.pet.pet_type.name }}, {{ application.pet.age_in_years }}</p>
+                                </div>
+                            </div>
+                            <div class="application-status">
+                                <span class="status-badge status-{{ application.status }}">
+                                    {{ application.get_status_display }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="application-details">
+                            <div class="detail-row">
+                                <strong>Дата подачи:</strong> {{ application.date_created|date:"d.m.Y H:i" }}
+                            </div>
+                            <div class="detail-row">
+                                <strong>Контакт:</strong> {{ application.phone }}
+                            </div>
+                            {% if application.admin_notes %}
+                                <div class="detail-row">
+                                    <strong>Комментарий приюта:</strong> {{ application.admin_notes }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-pets">
+                <h2>У вас пока нет заявок</h2>
+                <p>Найдите питомца на <a href="{% url 'pet_list' %}">главной странице</a> и подайте заявку на усыновление</p>
+            </div>
+        {% endif %}
+    </div></body>
+</html>

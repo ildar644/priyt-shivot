@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сравнение питомцев - Питомцы из приюта</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}"></head>
+<body>
+    <div class="container">
+        {% include 'includes/nav.html' %}
+
+        <div class="compare-container">
+            <a href="{% url 'pet_list' %}" class="back-btn">← Назад к списку</a>
+            
+            <div class="header">
+                <h1>🔍 Сравнение питомцев</h1>
+                <p>Сравните характеристики выбранных питомцев</p>
+            </div>
+
+            <div class="compare-grid">
+                {% for pet in pets %}
+                    <div class="compare-card">
+                        {% if pet.photo %}
+                            <img src="{{ pet.photo.url }}" alt="{{ pet.name }}">
+                        {% else %}
+                            <div class="no-photo">
+                                <span>📷 Фото отсутствует</span>
+                            </div>
+                        {% endif %}
+                        
+                        <h3>{{ pet.name }}</h3>
+                        
+                        <div class="compare-item">
+                            <span class="compare-label">Тип:</span>
+                            <span class="compare-value">{{ pet.pet_type.name }}</span>
+                        </div>
+                        
+                        <div class="compare-item">
+                            <span class="compare-label">Возраст:</span>
+                            <span class="compare-value">{{ pet.age_in_years }}</span>
+                        </div>
+                        
+                        <div class="compare-item">
+                            <span class="compare-label">Приют:</span>
+                            <span class="compare-value">{{ pet.shelter.name }}</span>
+                        </div>
+                        
+                        <div class="compare-item">
+                            <span class="compare-label">Характер:</span>
+                            <span class="compare-value">{{ pet.character|truncatewords:6 }}</span>
+                        </div>
+                        
+                        {% if pet.special_needs %}
+                        <div class="compare-item">
+                            <span class="compare-label">Особенности:</span>
+                            <span class="compare-value">{{ pet.special_needs|truncatewords:8 }}</span>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="compare-actions">
+                            <a href="{% url 'pet_detail' pet.pk %}" class="btn-action">Подробнее</a>
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'sponsor_pet' pet.pk %}" class="btn-action btn-sponsor">Помочь</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,114 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Заявка на усыновление {{ pet.name }} - Питомцы из приюта</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+</head>
+<body>
+    <div class="container">
+        {% include 'includes/nav.html' %}
+
+        <div class="pet-detail-container">
+            <a href="{% url 'pet_detail' pet.pk %}" class="back-btn">← Назад к {{ pet.name }}</a>
+            
+            <div class="header">
+                <h1>🏠 Заявка на усыновление</h1>
+                <p>Заполните форму, чтобы подать заявку на усыновление {{ pet.name }}</p>
+            </div>
+
+            <div class="adoption-pet-info">
+                <div class="pet-summary">
+                    {% if pet.photo %}
+                        <img src="{{ pet.photo.url }}" alt="{{ pet.name }}" class="pet-summary-photo">
+                    {% endif %}
+                    <div class="pet-summary-details">
+                        <h3>{{ pet.name }}</h3>
+                        <p><strong>Тип:</strong> {{ pet.pet_type.name }}</p>
+                        <p><strong>Возраст:</strong> {{ pet.age_in_years }}</p>
+                        <p><strong>Приют:</strong> {{ pet.shelter.name }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <form method="post" class="adoption-form">
+                {% csrf_token %}
+                
+                <div class="form-section">
+                    <h3>📋 Контактная информация</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="{{ form.full_name.id_for_label }}">{{ form.full_name.label }}</label>
+                            {{ form.full_name }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.phone.id_for_label }}">{{ form.phone.label }}</label>
+                            {{ form.phone }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+                        {{ form.email }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.address.id_for_label }}">{{ form.address.label }}</label>
+                        {{ form.address }}
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>🏠 Жилищные условия</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="{{ form.housing_type.id_for_label }}">{{ form.housing_type.label }}</label>
+                            {{ form.housing_type }}
+                        </div>
+                        <div class="form-group checkbox-group">
+                            {{ form.has_yard }}
+                            <label for="{{ form.has_yard.id_for_label }}">{{ form.has_yard.label }}</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.other_pets.id_for_label }}">{{ form.other_pets.label }}</label>
+                        {{ form.other_pets }}
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>🐾 Опыт и мотивация</h3>
+                    <div class="form-group">
+                        <label for="{{ form.experience.id_for_label }}">{{ form.experience.label }}</label>
+                        {{ form.experience }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.motivation.id_for_label }}">{{ form.motivation.label }}</label>
+                        {{ form.motivation }}
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>👨‍👩‍👧‍👦 Дополнительная информация</h3>
+                    <div class="form-group">
+                        <label for="{{ form.work_schedule.id_for_label }}">{{ form.work_schedule.label }}</label>
+                        {{ form.work_schedule }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.family_members.id_for_label }}">{{ form.family_members.label }}</label>
+                        {{ form.family_members }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.additional_info.id_for_label }}">{{ form.additional_info.label }}</label>
+                        {{ form.additional_info }}
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit">📝 Подать заявку</button>
+                    <a href="{% url 'pet_detail' pet.pk %}" class="btn-cancel">Отмена</a>
+                </div>
+            </form>
+        </div>
+    </div></body>
+</html>

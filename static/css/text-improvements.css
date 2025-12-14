@@ -1,0 +1,70 @@
+/* Улучшения для отображения текста */
+
+/* Ограничение высоты для длинного текста */
+.text-ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.text-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.4;
+}
+
+.text-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.4;
+}
+
+/* Специальные стили для карточек питомцев */
+.pet-card .pet-info span {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.3;
+}
+
+/* Для коротких полей - одна строка */
+.pet-info.short span {
+    -webkit-line-clamp: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+
+/* Для длинных полей - больше строк */
+.pet-info.long span {
+    -webkit-line-clamp: 3;
+}
+
+/* Улучшенная читаемость */
+.readable-text {
+    color: #2c3e50;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.readable-label {
+    color: #1a252f;
+    font-weight: 700;
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+    .pet-info span {
+        -webkit-line-clamp: 2;
+    }
+    
+    .pet-info.long span {
+        -webkit-line-clamp: 2;
+    }
+}

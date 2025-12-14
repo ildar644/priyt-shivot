@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мои избранные - Питомцы из приюта</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+</head>
+<body>
+    <div class="container">
+        {% include 'includes/nav.html' %}
+
+        <div class="header">
+            <h1>💖 Мои избранные питомцы</h1>
+            <p>Питомцы, которые вам понравились</p>
+        </div>
+
+        {% if favorites %}
+            <div class="pets-grid">
+                {% for favorite in favorites %}
+                    <div class="pet-card">
+                        <div class="pet-actions">
+                            <a href="{% url 'remove_from_favorites' favorite.pet.pk %}" class="favorite-btn" title="Удалить из избранного">
+                                💔
+                            </a>
+                        </div>
+                        
+                        <a href="{% url 'pet_detail' favorite.pet.pk %}">
+                            {% if favorite.pet.photo %}
+                                <img src="{{ favorite.pet.photo.url }}" alt="{{ favorite.pet.name }}">
+                            {% else %}
+                                <div class="no-photo">
+                                    <span>📷 Фото отсутствует</span>
+                                </div>
+                            {% endif %}
+                            
+                            <h3>{{ favorite.pet.name }}</h3>
+                            <div class="pet-info">
+                                <strong>Тип:</strong> <span>{{ favorite.pet.pet_type.name }}</span>
+                            </div>
+                            <div class="pet-info">
+                                <strong>Возраст:</strong> <span>{{ favorite.pet.age_in_years }}</span>
+                            </div>
+                            <div class="pet-info">
+                                <strong>Приют:</strong> <span>{{ favorite.pet.shelter.name }}</span>
+                            </div>
+                            <div class="pet-info">
+                                <strong>В избранном с:</strong> <span>{{ favorite.date_added|date:"d.m.Y" }}</span>
+                            </div>
+                        </a>
+                        
+                        <div class="pet-actions-bottom">
+                            <a href="{% url 'sponsor_pet' favorite.pet.pk %}" class="btn-action btn-sponsor">💝 Помочь</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-pets">
+                <h2>У вас пока нет избранных питомцев</h2>
+                <p>Добавляйте понравившихся питомцев в избранное, нажимая ❤️ на их карточках</p>
+                <a href="{% url 'pet_list' %}" class="back-btn">Посмотреть всех питомцев</a>
+            </div>
+        {% endif %}
+    </div></body>
+</html>
